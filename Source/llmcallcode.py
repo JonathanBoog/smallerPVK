@@ -1,11 +1,17 @@
+from flask import Flask, request, jsonify
 from openai import OpenAI
 from pydantic import BaseModel
-from typing import List, Dict, Union
+from typing import List, Union
 import os
 
-api_key = os.getenv("API_KEY")
-api = OpenAI(api_key = "")  # Nu fungerar det!
+# Starta Flask
+app = Flask(__name__)
 
+# Setup OpenAI
+api_key = os.getenv("API_KEY")
+api = OpenAI(api_key="")
+
+# System prompt
 system_prompt = '''Translate necessary parameters for the functions and return in given format.,  
 the move to location function is called move with parameters x,y,z, DET SKA ALLTID FINNAS tre parameterar "
 positivt Z är uppåt
@@ -19,18 +25,17 @@ om jag säger att jag vill gå x antal steg i en viss riktning, då ska ju du s�
 om användaren inte anger något -> inga actions
 '''
 
-
+# JSON-format för AI-svaret
 class Action(BaseModel):
     name: str
-    parameters: List[Union[str, float, int, List[float]]]  # Lista med olika typer av parametrar
+    parameters: List[Union[str, float, int, List[float]]]
 
 class JsonFormat(BaseModel):
     actions: List[Action]
 
-def get_ai_response(user_input: str, sys_inp:str) -> str:
-    """Tar in en användarinput och returnerar svaret från OpenAI."""
-
-    full_prompt = sys_inp  + system_prompt
+# Funktion för att få AI-respons
+def get_ai_response(user_input: str, sys_inp: str) -> str:
+    full_prompt = sys_inp + system_prompt
     completion = api.beta.chat.completions.parse(
         model="gpt-4.1-mini",
         messages=[
@@ -41,7 +46,18 @@ def get_ai_response(user_input: str, sys_inp:str) -> str:
     )
     return completion.choices[0].message.content
 
+# Flask-endpoint
+@app.route("/ai", methods=["POST"])
+def ai_endpoint():
+    try:
+        data = request.get_json()
+        prompt = data.get("prompt", "")
+        system_add = data.get("system", "")
+        result = get_ai_response(prompt, system_add)
+        return result
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Kör servern
 if __name__ == "__main__":
-    user_input = input("Enter Prompt: ")
-    response = get_ai_response(user_input, "")
-    print("AI:", response)
+    app.run(host="0.0.0.0", port=5000)
