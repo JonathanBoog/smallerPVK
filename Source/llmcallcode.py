@@ -8,8 +8,10 @@ api = OpenAI(api_key = "")  # Nu fungerar det!
 
 system_prompt = '''Translate necessary parameters for the functions and return in given format.,  
 the move to location function is called move with parameters x,y,z, DET SKA ALLTID FINNAS tre parameterar "
+positivt Z är uppåt
 to make the character jump, jump har inga parametrar.
 delay : en parameter (i sekunder)
+outputText: en parameter, det som finns ska vara som eventuellt SVAR på fråga som användaren har. Det kan vara frågor om beräkningar också då du eventuellt kommer behöva läsa av miljön för att beräkningarna
 
 om spelaren ber om att få göra saker i rad. varje del ska finnas i actions listan
 x=1 innebär i princip en 1 cm 
@@ -30,7 +32,7 @@ def get_ai_response(user_input: str, sys_inp:str) -> str:
 
     full_prompt = sys_inp  + system_prompt
     completion = api.beta.chat.completions.parse(
-        model="gpt-4o-mini-2024-07-18",
+        model="gpt-4.1-mini",
         messages=[
             {"role": "system", "content": full_prompt},
             {"role": "user", "content": user_input}
