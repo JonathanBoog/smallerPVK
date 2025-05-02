@@ -25,6 +25,7 @@ to make the character jump, jump har inga parametrar.
 delay : en parameter (i sekunder).
 rotate: parametrar x,y,z där x,y,z är en punkt som spelaren ska titta på.
 outputText: en parameter, det som finns ska vara som eventuellt SVAR på fråga som användaren har.
+putOutFire: Ingen parameter, den kommer till följd av en move där move går till elden
 om spelaren ber om att få göra saker i rad, varje del ska finnas i actions listan.
 om jag säger att jag vill gå x antal steg i en viss riktning, då ska du öka koordinat värdena.
 om användaren inte anger något -> inga actions.
