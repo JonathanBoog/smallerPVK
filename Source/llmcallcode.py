@@ -23,11 +23,13 @@ the move to location function is called move with parameters x,y,z, DET SKA ALLT
 positivt Z är uppåt.
 to make the character jump, jump har inga parametrar.
 delay : en parameter (i sekunder).
+rotate: parametrar x,y,z där x,y,z är en punkt som spelaren ska titta på.
 outputText: en parameter, det som finns ska vara som eventuellt SVAR på fråga som användaren har.
 om spelaren ber om att få göra saker i rad, varje del ska finnas i actions listan.
-x=1 innebär 1 cm.
 om jag säger att jag vill gå x antal steg i en viss riktning, då ska du öka koordinat värdena.
 om användaren inte anger något -> inga actions.
+om det finns områden bland koordinaterna som är högre än det runtomkring så kan de kallas för berg 
+
 RETURNERA ALLTID JSON I DETTA FORMAT:
 
 {
@@ -43,6 +45,10 @@ RETURNERA ALLTID JSON I DETTA FORMAT:
     {
       "name": "outputText",
       "parameters": ["Den koordinat du söker"]
+    }
+    {
+      "name": "rotate",
+      "parameters": [1, 2, 3]
     }
   ]
 }
