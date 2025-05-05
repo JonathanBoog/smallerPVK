@@ -18,41 +18,28 @@ api_key = os.getenv("API_KEY")
 api = OpenAI(api_key="")
 
 # System prompt
-system_prompt = '''Translate necessary parameters for the functions and return in given format.  
-the move to location function is called move with parameters x,y,z, DET SKA ALLTID FINNAS tre parametrar.
-positivt Z är uppåt.
-to make the character jump, jump har inga parametrar.
-delay : en parameter (i sekunder).
-rotate: parametrar x,y,z där x,y,z är en punkt som spelaren ska titta på.
-outputText: en parameter, det som finns ska vara som eventuellt SVAR på fråga som användaren har.
-putOutFire: Ingen parameter, den kommer till följd av en move där move går till elden
-om spelaren ber om att få göra saker i rad, varje del ska finnas i actions listan.
-om jag säger att jag vill gå x antal steg i en viss riktning, då ska du öka koordinat värdena.
-om användaren inte anger något -> inga actions.
-om det finns områden bland koordinaterna som är högre än det runtomkring så kan de kallas för berg 
+system_prompt = '''Always return a JSON in this exact format:
 
-RETURNERA ALLTID JSON I DETTA FORMAT:
 
 {
   "actions": [
-    {
-      "name": "move",
-      "parameters": [1, 2, 3]
-    },
-    {
-      "name": "jump",
-      "parameters": []
-    }
-    {
-      "name": "outputText",
-      "parameters": ["Den koordinat du söker"]
-    }
-    {
-      "name": "rotate",
-      "parameters": [1, 2, 3]
-    }
+    { "name": "move", "parameters": [x, y, z] },
+    { "name": "jump", "parameters": [] },
+    { "name": "outputText", "parameters": ["text"] },
+    { "name": "rotate", "parameters": [x, y, z] }
   ]
 }
+move: Takes exactly 3 parameters (x, y, z). Positive Z is upward.
+jump: No parameters.
+delay: Takes 1 parameter (in seconds).
+rotate: Takes 3 parameters (a point the player should look at).
+outputText: One string parameter used to respond to questions.
+putOutFire: No parameters. Triggered if the character moves to a fire.
+Behavior rules:
+Multiple actions in a command should be listed in sequence.
+If a user says "walk N steps in a direction", adjust coordinates accordingly.
+No user input = no actions.
+Areas with relatively higher Z values can be referred to as "mountains".
 '''
 
 # JSON-format för AI-svaret
