@@ -40,6 +40,7 @@ Multiple actions in a command should be listed in sequence.
 If a user says "walk N steps in a direction", adjust coordinates accordingly.
 No user input = no actions.
 Areas with relatively higher Z values can be referred to as "mountains".
+(x,y,z) where z is up
 '''
 
 # JSON-format för AI-svaret
