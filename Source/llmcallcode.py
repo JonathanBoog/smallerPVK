@@ -23,7 +23,7 @@ system_prompt = '''Always return a JSON in this exact format:
 {
   "actions": [
     { "name": "move", "parameters": [x, y, z] },
-    { "name": "jump", "parameters": [] },
+    { "name": "jump", "parameters": [5] },
     { "name": "outputText", "parameters": ["text"] },
     { "name": "rotate", "parameters": [x, y, z] }
   ]
@@ -31,7 +31,7 @@ system_prompt = '''Always return a JSON in this exact format:
 
 Function Definitions:
 - move: Takes exactly 3 parameters (x, y, z). The function uses pathfinding to reach the target.
-- jump: Takes no parameters.
+- jump: Takes one parameter, the amount of times the player want to jump
 - delay: Takes 1 parameter (duration in seconds).
 - rotate: Takes 3 parameters representing a world-space point the player should look at.
 - outputText: Takes one string parameter used to provide a response or explanation.
