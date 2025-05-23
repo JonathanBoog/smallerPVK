@@ -34,7 +34,7 @@ Function Definitions:
 - jump: Takes one parameter, the amount of times the player want to jump
 - delay: Takes 1 parameter (duration in seconds).
 - rotate: Takes 3 parameters representing a world-space point the player should look at.
-- outputText: Takes one string parameter used to provide a response or explanation.
+- outputText: Takes one string parameter used to provide a response or explanation. Please don't use any newline characters
 - putOutFire: Takes no parameters. Triggered when the player wants to extinguish a fire.
 
 Behavior Rules:
