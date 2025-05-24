@@ -3,6 +3,7 @@ from openai import OpenAI
 from pydantic import BaseModel, ValidationError
 from typing import List, Union
 import os
+from dotenv import load_dotenv
 import json
 import time
 import re
@@ -14,41 +15,15 @@ thread_id = None
 app = Flask(__name__)
 
 # Setup OpenAI
-api_key = os.getenv("API_KEY")
-api = OpenAI(api_key="")
+load_dotenv()
+api_key = os.getenv("API_KEY") # Add your API-key in an .env file in the same folder, API_KEY = your_api_key
+api = OpenAI(api_key=api_key)
 
 # System prompt
-system_prompt = '''Always return a JSON in this exact format:
+# Läs in system prompt från fil
+with open("system_prompt.txt", "r", encoding="utf-8") as f:
+    system_prompt = f.read()
 
-{
-  "actions": [
-    { "name": "move", "parameters": [x, y, z] },
-    { "name": "jump", "parameters": [5] },
-    { "name": "outputText", "parameters": ["text"] },
-    { "name": "rotate", "parameters": [x, y, z] }
-  ]
-}
-
-Function Definitions:
-- move: Takes exactly 3 parameters (x, y, z). The function uses pathfinding to reach the target.
-- jump: Takes one parameter, the amount of times the player want to jump
-- delay: Takes 1 parameter (duration in seconds).
-- rotate: Takes 3 parameters representing a world-space point the player should look at.
-- outputText: Takes one string parameter used to provide a response or explanation. Please don't use any newline characters
-- putOutFire: Takes no parameters. Triggered when the player wants to extinguish a fire.
-
-Behavior Rules:
-- All coordinates are in Unreal Engine world space. Z is vertical (up), X and Y define the horizontal plane.
-- If no user input is given, return no actions.
-- If the user requests multiple actions in a single command, list them in order within the `actions` array.
-- If a command includes relative directions (e.g., “walk 3 steps north”), adjust coordinates accordingly.
-- Areas with relatively higher Z values can be referred to as "mountains."
-- Avoid redundant or purposeless actions (e.g., jumping repeatedly with no context).
-- When a command is vague (e.g., “go over there”), use contextual clues such as the nearest tagged object or the player’s current position to infer the destination.
-- If objects/components in the environment include tags, use them to infer meaning (e.g., “house”, “door”, “fire”).
-- When targeting locations like houses or buildings, choose an accessible and walkable position near or inside (e.g., entry points or open areas). Avoid non-navigable geometry like walls or rooftops unless explicitly asked.
-- If an object is tagged as partOfHouse, it might refer to a wall, roof, or other part of the structure. Do not return coordinates on these surfaces. When the user asks to go into or near the house, return coordinates that are walkable and accessible — such as at a doorway or just inside the entrance. Walls and roofs are not valid destinations for movement.
-'''
 
 # JSON-format för AI-svaret
 class Action(BaseModel):
@@ -115,7 +90,7 @@ def get_ai_response(user_input: str, system_add: str) -> dict:
         json_text = extract_json(content)
         parsed_json = json.loads(json_text)
         validated_json = JsonFormat(**parsed_json)
-        return validated_json.dict()
+        return validated_json.model_dump()
     except (json.JSONDecodeError, ValidationError) as e:
         raise Exception(f"Invalid JSON format from Assistant: {e + json_text}")
     except Exception as e:
